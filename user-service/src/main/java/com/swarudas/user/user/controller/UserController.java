@@ -1,8 +1,11 @@
 package com.swarudas.user.user.controller;
 
+import com.swarudas.user.user.DTO.Department;
 import com.swarudas.user.user.DTO.UserDepartmentVO;
 import com.swarudas.user.user.entity.User;
 import com.swarudas.user.user.service.UserService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/users")
 public class UserController {
+
+    private static final String SERVICE_A = "serviceA";
 
     @Autowired
     private UserService userService;
@@ -20,7 +25,31 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDepartmentVO> getUserWithDepartment(@PathVariable("id") Long userId) {
-        return ResponseEntity.ok(userService.getUserWithDepartment(userId));
+    @CircuitBreaker(name = SERVICE_A, fallbackMethod = "userFallback")
+    public UserDepartmentVO getUserWithDepartment(@PathVariable("id") Long userId) {
+        return userService.getUserWithDepartment(userId);
+    }
+
+    public UserDepartmentVO userFallback(Exception e) {
+        System.out.printf("Inside userFallback method of UserController..");
+        UserDepartmentVO vo = new UserDepartmentVO();
+        User user = User.builder()
+                .userId(1234l)
+                .firstName("dummy")
+                .lastName("dummy")
+                .email("dummy@email")
+                .departmentId(1234l)
+                .build();
+
+        Department department = Department.builder()
+                .departmentId(12l)
+                .departmentCode("1234")
+                .departmentName("dummyDept")
+                .departmentAddress("dummyAdd")
+                .build();
+
+        vo.setUser(user);
+        vo.setDepartment(department);
+        return vo;
     }
 }

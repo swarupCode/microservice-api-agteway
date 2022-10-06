@@ -4,6 +4,7 @@ import com.swarudas.user.user.DTO.Department;
 import com.swarudas.user.user.DTO.UserDepartmentVO;
 import com.swarudas.user.user.entity.User;
 import com.swarudas.user.user.repository.UserRepository;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 @Service
 public class UserService {
-
+    
     @Autowired
     private RestTemplate restTemplate;
     @Autowired
