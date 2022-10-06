@@ -13,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 @Service
 public class UserService {
-    
+
     @Autowired
     private RestTemplate restTemplate;
     @Autowired

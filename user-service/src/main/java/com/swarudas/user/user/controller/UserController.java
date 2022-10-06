@@ -6,10 +6,14 @@ import com.swarudas.user.user.entity.User;
 import com.swarudas.user.user.service.UserService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
+
+@Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -24,9 +28,12 @@ public class UserController {
         return ResponseEntity.ok(userService.saveUser(user));
     }
 
+    int count = 1;
     @GetMapping("/{id}")
-    @CircuitBreaker(name = SERVICE_A, fallbackMethod = "userFallback")
+//    @CircuitBreaker(name = SERVICE_A, fallbackMethod = "userFallback")
+    @Retry(name = SERVICE_A)
     public UserDepartmentVO getUserWithDepartment(@PathVariable("id") Long userId) {
+        log.info("Retry method called {} times at {}",count++,new Date());
         return userService.getUserWithDepartment(userId);
     }
 
