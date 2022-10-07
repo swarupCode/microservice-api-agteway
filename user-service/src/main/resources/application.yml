@@ -5,15 +5,8 @@ spring:
   application:
     name: USER-SERVICE
 
-#service-registry
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-    instance:
-      hostname: localhost
+
+#service-registry removed now pointing to bootstrap.yml config server
 
 #actuator configuration
 management:
